@@ -5,8 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.gesturedemo.ui.theme.GestureDemoTheme
@@ -34,36 +35,48 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        ClickDemo()
-    }
+    TapPressDemo(modifier)
 }
 
 @Composable
-fun ClickDemo(modifier: Modifier = Modifier) {
-    var colorState by remember { mutableStateOf(true) }
-    var bgColor by remember { mutableStateOf(Color.Blue) }
+fun TapPressDemo(modifier: Modifier = Modifier) {
+    var textState by remember { mutableStateOf("Waiting ....") }
 
-    val clickHandler = {
-        colorState = !colorState
-        bgColor = if (colorState) Color.Blue else Color.DarkGray
+    val tapHandler = { status: String ->
+        textState = status
     }
 
-    Box(
-        modifier = modifier
-            .size(100.dp)
-            .background(bgColor)
-            .clickable { clickHandler() }
-    )
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(10.dp)
+                .size(100.dp)
+                .background(Color.Blue)
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onPress = { tapHandler("onPress Detected") },
+                        onTap = { tapHandler("onTap Detected") },
+                        onDoubleTap = { tapHandler("onDoubleTap Detected") },
+                        onLongPress = { tapHandler("onLongPress Detected") }
+                    )
+                }
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        Text(
+            text = textState,
+            style = MaterialTheme.typography.bodyLarge
+        )
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun MainScreenPreview() {
+fun TapPressDemoPreview() {
     GestureDemoTheme {
-        MainScreen()
+        TapPressDemo()
     }
 }
