@@ -43,7 +43,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
-    DragDemo(modifier)
+    PointerInputDrag(modifier)
 }
 
 @Composable
@@ -134,6 +134,66 @@ fun MultiDragDemo(modifier: Modifier = Modifier) {
     }
 }
 
+@Composable
+fun PointerInputDrag(modifier: Modifier = Modifier) {
+    Box(modifier = modifier.fillMaxSize()) {
+        var xOffset by remember { mutableStateOf(0f) }
+        var yOffset by remember { mutableStateOf(0f) }
+
+        Box(
+            modifier = Modifier
+                .offset { IntOffset(xOffset.roundToInt(), yOffset.roundToInt()) }
+                .background(Color.Blue)
+                .size(100.dp)
+                .pointerInput(Unit) {
+                    detectDragGestures { _, distance ->
+                        xOffset += distance.x
+                        yOffset += distance.y
+                    }
+                }
+        )
+    }
+}
+
+@Composable
+fun PointerInputDragWithInfo(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        var xOffset by remember { mutableStateOf(0f) }
+        var yOffset by remember { mutableStateOf(0f) }
+
+        Text(
+            text = "X: ${xOffset.roundToInt()}, Y: ${yOffset.roundToInt()}",
+            style = MaterialTheme.typography.bodyLarge,
+            color = Color.Black,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        Box(
+            modifier = Modifier
+                .offset { IntOffset(xOffset.roundToInt(), yOffset.roundToInt()) }
+                .background(Color.Green)
+                .size(100.dp)
+                .pointerInput(Unit) {
+                    detectDragGestures { change, distance ->
+                        xOffset += distance.x
+                        yOffset += distance.y
+                    }
+                }
+        )
+
+        Text(
+            text = "Перетаскивайте блок в любом направлении",
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color.Gray,
+            modifier = Modifier.padding(top = 16.dp)
+        )
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun TapPressDemoPreview() {
@@ -155,5 +215,21 @@ fun DragDemoPreview() {
 fun MultiDragDemoPreview() {
     GestureDemoTheme {
         MultiDragDemo()
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PointerInputDragPreview() {
+    GestureDemoTheme {
+        PointerInputDrag()
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PointerInputDragWithInfoPreview() {
+    GestureDemoTheme {
+        PointerInputDragWithInfo()
     }
 }
