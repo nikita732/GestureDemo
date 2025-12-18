@@ -26,6 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import kotlin.math.roundToInt
 import com.example.gesturedemo.ui.theme.GestureDemoTheme
+import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.gestures.rememberScrollableState
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,7 +45,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
-    PointerInputDrag(modifier)
+    ScrollableModifier(modifier)
 }
 
 @Composable
@@ -191,6 +193,38 @@ fun PointerInputDragWithInfo(modifier: Modifier = Modifier) {
             color = Color.Gray,
             modifier = Modifier.padding(top = 16.dp)
         )
+    }
+}
+
+@Composable
+fun ScrollableModifier(modifier: Modifier = Modifier) {
+    var offset by remember { mutableStateOf(0f) }
+
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .scrollable(
+                orientation = Orientation.Vertical,
+                state = rememberScrollableState { distance ->
+                    offset += distance
+                    distance
+                }
+            )
+    ) {
+        Box(
+            modifier = Modifier
+                .size(90.dp)
+                .offset { IntOffset(0, offset.roundToInt()) }
+                .background(Color.Red)
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ScrollableModifierPreview() {
+    GestureDemoTheme {
+        ScrollableModifier()
     }
 }
 
